@@ -52,7 +52,7 @@ export function SigninScreen() {
 					</Text>
 				</TouchableOpacity>
 
-				<Link href="../signup" asChild>
+				<Link href="/signup" asChild>
 					<TouchableOpacity className="mt-4">
 						<Text className="text-blue-500 text-center">
 							Don't have an account? Sign Up

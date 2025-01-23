@@ -66,7 +66,7 @@ export function SignupScreen() {
 				</TouchableOpacity>
 			</View>
 
-			<Link href="../signin" asChild>
+			<Link href="/signin" asChild>
 				<TouchableOpacity className="mt-4">
 					<Text className="text-blue-500 text-center">
 						Already have an account? Sign In
