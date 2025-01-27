@@ -259,3 +259,6 @@ local.properties
 
 # Bundle artifacts
 *.jsbundle
+
+ios/
+android/
