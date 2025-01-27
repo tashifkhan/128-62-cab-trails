@@ -40,7 +40,7 @@ export default function Home() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
+      <Stack.Screen options={{ headerShown: false }} />
       <Container>
         <FlashList
           contentInsetAdjustmentBehavior="automatic"
