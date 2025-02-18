@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, TextInput, Button, SegmentedButtons, Card, useTheme } from 'react-native-paper';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
+import {
+  Text,
+  Button,
+  SegmentedButtons,
+  Card,
+  useTheme,
+  Surface,
+  Portal,
+  Modal,
+} from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const TRANSPORT_OPTIONS = [
   { label: 'Auto', value: 'auto', capacity: 3 },
@@ -11,64 +29,199 @@ const TRANSPORT_OPTIONS = [
 export default function CreateRideScreen() {
   const [route, setRoute] = useState('62to128');
   const [transport, setTransport] = useState('auto');
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [vacancy, setVacancy] = useState(1);
   const theme = useTheme();
+  const [fadeAnim] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const currentTransport = TRANSPORT_OPTIONS.find((t) => t.value === transport);
+  const maxVacancy = currentTransport ? currentTransport.capacity - 1 : 0;
+
+  const onTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      setTime(selectedTime);
+    }
+  };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.header, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
-        <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.text }]}>Create a Ride</Text>
-      </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+        <View style={styles.header}>
+          <Text
+            variant="displaySmall"
+            style={[styles.title, { color: theme.colors.primary }]}
+          >
+            Create Ride
+          </Text>
+          <Text variant="bodyLarge" style={{ color: theme.colors.outline }}>
+            Share your journey with others
+          </Text>
+        </View>
 
-      <ScrollView style={styles.content}>
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text variant="titleMedium" style={[styles.label, { color: theme.colors.text }]}>Route</Text>
-            <SegmentedButtons
-              value={route}
-              onValueChange={setRoute}
-              buttons={[
-                { value: '62to128', label: 'JIIT-62 → 128' },
-                { value: '128to62', label: 'JIIT-128 → 62' },
-              ]}
-              style={styles.segmentedButton}
-            />
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <Surface style={styles.formContainer} elevation={1}>
+            <View style={styles.section}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Route Details
+              </Text>
+              <SegmentedButtons
+                value={route}
+                onValueChange={setRoute}
+                buttons={[
+                  {
+                    value: '62to128',
+                    label: 'JIIT-62 → 128',
+                    icon: 'arrow-right',
+                  },
+                  {
+                    value: '128to62',
+                    label: 'JIIT-128 → 62',
+                    icon: 'arrow-left',
+                  },
+                ]}
+                style={styles.segmentedButton}
+              />
+            </View>
 
-            <Text variant="titleMedium" style={[styles.label, styles.spacing, { color: theme.colors.text }]}>Transport</Text>
-            <SegmentedButtons
-              value={transport}
-              onValueChange={setTransport}
-              buttons={TRANSPORT_OPTIONS.map(opt => ({
-                value: opt.value,
-                label: `${opt.label} (${opt.capacity})`
-              }))}
-              style={styles.segmentedButton}
-            />
+            <View style={styles.section}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Transport Type
+              </Text>
+              <View style={styles.transportContainer}>
+                {TRANSPORT_OPTIONS.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setTransport(opt.value)}
+                    style={[
+                      styles.transportOption,
+                      transport === opt.value && styles.transportOptionSelected,
+                      { borderColor: theme.colors.primary },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={opt.value === 'auto' ? 'auto-rickshaw' : 'car'}
+                      size={24}
+                      color={
+                        transport === opt.value
+                          ? theme.colors.primary
+                          : theme.colors.outline
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.transportText,
+                        {
+                          color:
+                            transport === opt.value
+                              ? theme.colors.primary
+                              : theme.colors.text,
+                        },
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                    <Text style={styles.capacityText}>
+                      {opt.capacity} seats
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
 
-            <Text variant="titleMedium" style={[styles.label, styles.spacing, { color: theme.colors.text }]}>Time</Text>
-            <TextInput
-              mode="outlined"
-              value={time}
-              onChangeText={setTime}
-              placeholder="HH:MM"
-              keyboardType="numbers-and-punctuation"
-              style={[styles.input, { backgroundColor: theme.colors.surface }]}
-              textColor={theme.colors.text}
-            />
+            <View style={styles.section}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Time & Vacancy
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowTimePicker(true)}
+                style={styles.timeSelector}
+              >
+                <MaterialCommunityIcons
+                  name="clock-outline"
+                  size={24}
+                  color={theme.colors.primary}
+                />
+                <Text
+                  variant="headlineSmall"
+                  style={{ color: theme.colors.text }}
+                >
+                  {time.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+              </TouchableOpacity>
 
-            <Button 
-              mode="contained" 
+              <View style={styles.vacancySelector}>
+                <Text variant="bodyLarge">Available Seats</Text>
+                <View style={styles.vacancyControls}>
+                  <Button
+                    mode="outlined"
+                    onPress={() => setVacancy(Math.max(1, vacancy - 1))}
+                    disabled={vacancy <= 1}
+                    icon="minus"
+                    style={styles.vacancyButton}
+                  />
+                  <Text variant="headlineMedium" style={styles.vacancyNumber}>
+                    {vacancy}
+                  </Text>
+                  <Button
+                    mode="outlined"
+                    onPress={() =>
+                      setVacancy(Math.min(maxVacancy, vacancy + 1))
+                    }
+                    disabled={vacancy >= maxVacancy}
+                    icon="plus"
+                    style={styles.vacancyButton}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <Button
+              mode="contained"
               style={styles.createButton}
+              contentStyle={styles.createButtonContent}
               onPress={() => {
                 // TODO: Implement ride creation
               }}
             >
               Create Ride
             </Button>
-          </Card.Content>
-        </Card>
-      </ScrollView>
-    </View>
+          </Surface>
+        </ScrollView>
+
+        {showTimePicker && (
+          <Portal>
+            <Modal
+              visible={showTimePicker}
+              onDismiss={() => setShowTimePicker(false)}
+              contentContainerStyle={styles.timePickerModal}
+            >
+              <DateTimePicker
+                value={time}
+                mode="time"
+                is24Hour={true}
+                onChange={onTimeChange}
+                display="spinner"
+              />
+            </Modal>
+          </Portal>
+        )}
+      </Animated.View>
+    </SafeAreaView>
   );
 }
 
@@ -77,32 +230,85 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    borderBottomWidth: 1,
+    padding: 24,
+    paddingBottom: 16,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   content: {
+    flex: 1,
+  },
+  formContainer: {
+    margin: 16,
+    borderRadius: 16,
     padding: 16,
   },
-  card: {
-    marginBottom: 16,
+  section: {
+    marginBottom: 24,
   },
-  label: {
-    marginBottom: 8,
+  sectionTitle: {
+    marginBottom: 16,
+    fontWeight: '600',
+  },
+  transportContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  transportOption: {
+    flex: 1,
+    minWidth: 100,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    gap: 8,
+  },
+  transportOptionSelected: {
+    borderWidth: 2,
+  },
+  transportText: {
+    fontSize: 16,
     fontWeight: '500',
   },
-  spacing: {
-    marginTop: 24,
+  capacityText: {
+    fontSize: 12,
+    opacity: 0.7,
   },
-  segmentedButton: {
-    marginBottom: 8,
+  timeSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
   },
-  input: {
-    marginBottom: 8,
+  vacancySelector: {
+    marginTop: 16,
+  },
+  vacancyControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    gap: 16,
+  },
+  vacancyButton: {
+    borderRadius: 8,
+  },
+  vacancyNumber: {
+    minWidth: 40,
+    textAlign: 'center',
   },
   createButton: {
-    marginTop: 24,
+    borderRadius: 12,
+  },
+  createButtonContent: {
+    paddingVertical: 8,
+  },
+  timePickerModal: {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 20,
+    borderRadius: 16,
   },
 });

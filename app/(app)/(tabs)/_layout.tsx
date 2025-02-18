@@ -6,13 +6,19 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#2563eb',
-      }}>
+        headerShown: false,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Find Ride',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="car-search" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="car-search"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />

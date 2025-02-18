@@ -1,71 +1,144 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Button, Divider, useTheme } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Animated } from 'react-native';
+import { Text, Card, Button, useTheme, Surface } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FindRideScreen() {
   const theme = useTheme();
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(50));
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.header, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
-        <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.text }]}>Available Rides</Text>
-      </View>
-      
-      <ScrollView style={styles.content}>
-        <Card style={[styles.quickMatchCard, { backgroundColor: theme.colors.surfaceVariant }]}>
-          <Card.Content>
-            <View style={styles.quickMatchHeader}>
-              <MaterialCommunityIcons name="lightning-bolt" size={24} color={theme.colors.warning} />
-              <Text variant="titleMedium" style={[styles.quickMatchTitle, { color: theme.colors.text }]}>Quick Match</Text>
-            </View>
-            <Text variant="bodyMedium" style={[styles.quickMatchDescription, { color: theme.colors.textSecondary }]}>
-              Let us find the perfect ride for you instantly
-            </Text>
-            <Button 
-              mode="contained" 
-              style={styles.quickMatchButton}
-              buttonColor={theme.colors.warning}
-              onPress={() => {
-                // TODO: Implement random matching
-              }}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        <View style={styles.header}>
+          <Text
+            variant="displaySmall"
+            style={[styles.title, { color: theme.colors.primary }]}
+          >
+            Find a Ride
+          </Text>
+          <Text variant="bodyLarge" style={{ color: theme.colors.outline }}>
+            Join others on their journey
+          </Text>
+        </View>
+
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
+            <Surface style={styles.quickMatchContainer} elevation={1}>
+              <MaterialCommunityIcons
+                name="flash"
+                size={32}
+                color={theme.colors.primary}
+              />
+              <View style={styles.quickMatchContent}>
+                <Text
+                  variant="titleLarge"
+                  style={{ color: theme.colors.primary, fontWeight: '700' }}
+                >
+                  Quick Match
+                </Text>
+                <Text
+                  variant="bodyMedium"
+                  style={{ color: theme.colors.outline }}
+                >
+                  Find the perfect ride instantly
+                </Text>
+              </View>
+              <Button
+                mode="contained"
+                style={styles.matchButton}
+                icon="lightning-bolt"
+                contentStyle={styles.matchButtonContent}
+              >
+                Match Now
+              </Button>
+            </Surface>
+
+            <Text
+              variant="titleLarge"
+              style={[styles.sectionTitle, { color: theme.colors.primary }]}
             >
-              Match Me Now
-            </Button>
-          </Card.Content>
-        </Card>
+              Available Rides
+            </Text>
 
-        <Divider style={[styles.divider, { backgroundColor: theme.colors.border }]} />
-        
-        <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.text }]}>Browse Available Rides</Text>
+            {[1, 2, 3].map((_, index) => (
+              <Surface key={index} style={styles.rideCard} elevation={1}>
+                <View style={styles.rideHeader}>
+                  <MaterialCommunityIcons
+                    name={index % 2 === 0 ? 'car' : 'auto-rickshaw'}
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                  <Text
+                    variant="titleMedium"
+                    style={{ color: theme.colors.text, marginLeft: 8 }}
+                  >
+                    {index % 2 === 0 ? 'JIIT-62 → 128' : 'JIIT-128 → 62'}
+                  </Text>
+                </View>
 
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text variant="titleMedium" style={{ color: theme.colors.text }}>JIIT-62 → JIIT-128</Text>
-            <Text variant="bodyMedium" style={[styles.time, { color: theme.colors.textSecondary }]}>09:30 AM</Text>
-            <View style={styles.details}>
-              <Text variant="bodyMedium" style={{ color: theme.colors.textSecondary }}>Auto Rickshaw • 2/3 seats filled</Text>
-              <Button mode="contained" style={styles.joinButton}>
-                Join
-              </Button>
-            </View>
-          </Card.Content>
-        </Card>
+                <View style={styles.rideDetails}>
+                  <View style={styles.detailItem}>
+                    <MaterialCommunityIcons
+                      name="clock-outline"
+                      size={20}
+                      color={theme.colors.outline}
+                    />
+                    <Text
+                      variant="bodyMedium"
+                      style={{ color: theme.colors.outline, marginLeft: 4 }}
+                    >
+                      {`${9 + index}:30 AM`}
+                    </Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <MaterialCommunityIcons
+                      name="account-group"
+                      size={20}
+                      color={theme.colors.outline}
+                    />
+                    <Text
+                      variant="bodyMedium"
+                      style={{ color: theme.colors.outline, marginLeft: 4 }}
+                    >
+                      2/4 seats
+                    </Text>
+                  </View>
+                </View>
 
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text variant="titleMedium" style={{ color: theme.colors.text }}>JIIT-128 → JIIT-62</Text>
-            <Text variant="bodyMedium" style={[styles.time, { color: theme.colors.textSecondary }]}>10:00 AM</Text>
-            <View style={styles.details}>
-              <Text variant="bodyMedium" style={{ color: theme.colors.textSecondary }}>Regular Cab • 3/4 seats filled</Text>
-              <Button mode="contained" style={styles.joinButton}>
-                Join
-              </Button>
-            </View>
-          </Card.Content>
-        </Card>
-      </ScrollView>
-    </View>
+                <Button
+                  mode="contained-tonal"
+                  style={styles.joinButton}
+                  contentStyle={styles.joinButtonContent}
+                  icon="arrow-right"
+                >
+                  Join Ride
+                </Button>
+              </Surface>
+            ))}
+          </Animated.View>
+        </ScrollView>
+      </Animated.View>
+    </SafeAreaView>
   );
 }
 
@@ -74,53 +147,60 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    borderBottomWidth: 1,
+    padding: 24,
+    paddingBottom: 16,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   content: {
+    flex: 1,
     padding: 16,
   },
-  quickMatchCard: {
-    marginBottom: 16,
-  },
-  quickMatchHeader: {
+  quickMatchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 24,
   },
-  quickMatchTitle: {
-    marginLeft: 8,
-    fontWeight: '600',
+  quickMatchContent: {
+    flex: 1,
+    marginLeft: 12,
   },
-  quickMatchDescription: {
-    marginBottom: 16,
+  matchButton: {
+    borderRadius: 12,
   },
-  quickMatchButton: {
-    borderRadius: 8,
-  },
-  divider: {
-    marginVertical: 24,
+  matchButtonContent: {
+    paddingHorizontal: 16,
   },
   sectionTitle: {
     marginBottom: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
-  card: {
+  rideCard: {
+    padding: 16,
+    borderRadius: 16,
     marginBottom: 16,
   },
-  time: {
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  details: {
+  rideHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  rideDetails: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    gap: 16,
+  },
+  detailItem: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   joinButton: {
-    marginLeft: 16,
+    borderRadius: 12,
+  },
+  joinButtonContent: {
+    paddingVertical: 8,
   },
 });
