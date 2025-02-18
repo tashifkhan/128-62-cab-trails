@@ -43,13 +43,13 @@ export default function ProfileScreen() {
             <Surface style={styles.profileCard} elevation={1}>
               <Avatar.Image
                 size={80}
-                source={{ uri: 'https://ui-avatars.com/api/?name=John+Doe' }}
+                source={{ uri: 'https://ui-avatars.com/api/?name=Tashif' }}
               />
               <Text
                 variant="headlineMedium"
                 style={[styles.name, { color: theme.colors.onSurface }]}
               >
-                John Doe
+                Tashif
               </Text>
               <View style={styles.contactInfo}>
                 <MaterialCommunityIcons
@@ -74,50 +74,80 @@ export default function ProfileScreen() {
             </Text>
 
             {[1, 2].map((_, index) => (
-              <Surface key={index} style={styles.rideCard} elevation={1}>
-                <View style={styles.rideHeader}>
-                  <MaterialCommunityIcons
-                    name={index === 0 ? 'calendar-clock' : 'calendar-check'}
-                    size={24}
-                    color={theme.colors.primary}
-                  />
-                  <Text
-                    variant="titleMedium"
-                    style={{ color: theme.colors.onSurface, marginLeft: 8 }}
-                  >
-                    {index === 0 ? 'Upcoming Ride' : 'Completed Ride'}
-                  </Text>
-                </View>
+              <Animated.View
+                key={index}
+                style={{
+                  opacity: fadeAnim,
+                  transform: [{ translateY: slideAnim }],
+                }}
+              >
+                <Surface style={[styles.rideCard]} elevation={2}>
+                  <View style={styles.rideHeader}>
+                    <View
+                      style={[
+                        styles.rideIconContainer,
+                        {
+                          backgroundColor: theme.colors.primary + '15',
+                          padding: 12,
+                          borderRadius: 12,
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name={index === 0 ? 'calendar-clock' : 'calendar-check'}
+                        size={28}
+                        color={theme.colors.primary}
+                      />
+                    </View>
+                    <View style={styles.rideHeaderText}>
+                      <Text variant="titleMedium" style={[styles.rideTitle]}>
+                        {index === 0 ? 'Upcoming Ride' : 'Completed Ride'}
+                      </Text>
+                      <Text variant="bodySmall" style={[styles.rideDate]}>
+                        {index === 0 ? 'Today' : 'Yesterday'}
+                      </Text>
+                    </View>
+                  </View>
 
-                <View style={styles.rideDetails}>
-                  <View style={styles.detailItem}>
-                    <MaterialCommunityIcons
-                      name="map-marker"
-                      size={20}
-                      color={theme.colors.outline}
-                    />
-                    <Text
-                      variant="bodyMedium"
-                      style={{ color: theme.colors.outline, marginLeft: 4 }}
+                  <View style={[styles.rideDetails, { marginTop: 16 }]}>
+                    <View style={styles.detailItem}>
+                      <MaterialCommunityIcons
+                        name="map-marker"
+                        size={20}
+                        color={theme.colors.secondary}
+                      />
+                      <Text variant="bodyMedium" style={styles.detailText}>
+                        JIIT-62 → 128
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.detailItem,
+                        {
+                          backgroundColor: theme.colors.secondary + '15',
+                          padding: 8,
+                          borderRadius: 20,
+                          position: 'absolute',
+                          right: 1,
+                          top: -11,
+                        },
+                      ]}
                     >
-                      JIIT-62 → 128
-                    </Text>
+                      <MaterialCommunityIcons
+                        name="clock-outline"
+                        size={20}
+                        color={theme.colors.secondary}
+                      />
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.detailText, { textAlign: 'left' }]}
+                      >
+                        {`${9 + index}:30 AM`}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.detailItem}>
-                    <MaterialCommunityIcons
-                      name="clock-outline"
-                      size={20}
-                      color={theme.colors.outline}
-                    />
-                    <Text
-                      variant="bodyMedium"
-                      style={{ color: theme.colors.outline, marginLeft: 4 }}
-                    >
-                      {`${9 + index}:30 AM`}
-                    </Text>
-                  </View>
-                </View>
-              </Surface>
+                </Surface>
+              </Animated.View>
             ))}
 
             <Button
@@ -181,6 +211,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  rideIconContainer: {
+    marginRight: 12,
+  },
+  rideHeaderText: {
+    flex: 1,
+  },
+  rideTitle: {
+    fontWeight: '600',
+  },
+  rideDate: {
+    opacity: 0.7,
+  },
   rideDetails: {
     flexDirection: 'row',
     gap: 16,
@@ -188,6 +230,10 @@ const styles = StyleSheet.create({
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
+  },
+  detailText: {
+    opacity: 0.8,
   },
   logoutButton: {
     marginVertical: 24,
