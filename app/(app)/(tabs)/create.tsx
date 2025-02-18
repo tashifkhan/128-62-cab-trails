@@ -155,7 +155,9 @@ export default function CreateRideScreen() {
                 />
                 <Text
                   variant="headlineSmall"
-                  style={{ color: theme.colors.onSurface }}
+                  style={{
+                    color: theme.colors.onSurface,
+                  }}
                 >
                   {time.toLocaleTimeString([], {
                     hour: '2-digit',
@@ -210,15 +212,30 @@ export default function CreateRideScreen() {
             <Modal
               visible={showTimePicker}
               onDismiss={() => setShowTimePicker(false)}
-              contentContainerStyle={styles.timePickerModal}
+              contentContainerStyle={[
+                styles.timePickerModal,
+                { backgroundColor: theme.colors.surface },
+              ]}
             >
               <DateTimePicker
                 value={time}
                 mode="time"
                 is24Hour={true}
-                onChange={onTimeChange}
+                onChange={(event, selectedTime) => {
+                  if (selectedTime) {
+                    setTime(selectedTime);
+                  }
+                }}
                 display="spinner"
               />
+              <Button
+                mode="contained"
+                onPress={() => setShowTimePicker(false)}
+                style={styles.createButton}
+                contentStyle={styles.createButtonContent}
+              >
+                Confirm Time
+              </Button>
             </Modal>
           </Portal>
         )}

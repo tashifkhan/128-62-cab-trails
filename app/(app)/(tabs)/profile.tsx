@@ -26,7 +26,10 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background,
+      }}
     >
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         <View style={styles.header}>

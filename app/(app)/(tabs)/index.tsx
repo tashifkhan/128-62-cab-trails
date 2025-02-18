@@ -41,7 +41,10 @@ export default function FindRideScreen() {
           </Text>
         </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
           <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
             <Surface style={styles.quickMatchContainer} elevation={1}>
               <MaterialCommunityIcons
@@ -154,7 +157,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   content: {
-    flex: 1,
     padding: 16,
   },
   quickMatchContainer: {
