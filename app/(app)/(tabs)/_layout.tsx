@@ -1,11 +1,20 @@
 import { Tabs } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#2563eb',
+        tabBarActiveTintColor: colorScheme === 'dark' ? '#60a5fa' : '#2563eb',
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#000' : '#ffffff',
+          borderTopWidth: 0,
+          paddingTop: 8,
+        },
+        tabBarInactiveTintColor: colorScheme === 'dark' ? '#9ca3af' : '#6b7280',
         headerShown: false,
       }}
     >
@@ -14,11 +23,7 @@ export default function TabLayout() {
         options={{
           title: 'Find Ride',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="car-search"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="magnify" size={size} color={color} />
           ),
         }}
       />
@@ -27,7 +32,7 @@ export default function TabLayout() {
         options={{
           title: 'Create Ride',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="car-plus" size={size} color={color} />
+            <MaterialCommunityIcons name="car" size={size} color={color} />
           ),
         }}
       />
