@@ -106,19 +106,32 @@ export default function CreateRideScreen() {
                     onPress={() => setTransport(opt.value)}
                     style={[
                       styles.transportOption,
-                      transport === opt.value && styles.transportOptionSelected,
-                      { borderColor: theme.colors.primary },
+                      {
+                        backgroundColor:
+                          transport === opt.value
+                            ? theme.colors.primary + '15' // 15 is hex for 10% opacity
+                            : 'transparent',
+                        borderColor:
+                          transport === opt.value
+                            ? theme.colors.primary
+                            : theme.colors.outline,
+                        transform: [
+                          { scale: transport === opt.value ? 1.02 : 1 },
+                        ],
+                      },
                     ]}
                   >
-                    <MaterialCommunityIcons
-                      name={opt.value === 'auto' ? 'rickshaw' : 'car'}
-                      size={24}
-                      color={
-                        transport === opt.value
-                          ? theme.colors.primary
-                          : theme.colors.outline
-                      }
-                    />
+                    <View>
+                      <MaterialCommunityIcons
+                        name={opt.value === 'auto' ? 'rickshaw' : 'car'}
+                        size={20}
+                        color={
+                          transport === opt.value
+                            ? theme.colors.primary
+                            : theme.colors.outline
+                        }
+                      />
+                    </View>
                     <Text
                       style={[
                         styles.transportText,
@@ -127,12 +140,18 @@ export default function CreateRideScreen() {
                             transport === opt.value
                               ? theme.colors.primary
                               : theme.colors.onSurface,
+                          fontWeight: transport === opt.value ? '600' : '400',
                         },
                       ]}
                     >
                       {opt.label}
                     </Text>
-                    <Text style={styles.capacityText}>
+                    <Text
+                      style={[
+                        styles.capacityText,
+                        { color: theme.colors.outline },
+                      ]}
+                    >
                       {opt.capacity} seats
                     </Text>
                   </TouchableOpacity>
