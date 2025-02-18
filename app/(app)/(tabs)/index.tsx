@@ -84,13 +84,13 @@ export default function FindRideScreen() {
               <Surface key={index} style={styles.rideCard} elevation={1}>
                 <View style={styles.rideHeader}>
                   <MaterialCommunityIcons
-                    name={index % 2 === 0 ? 'car' : 'auto-rickshaw'}
+                    name={index % 2 === 0 ? 'car' : 'rickshaw'}
                     size={24}
                     color={theme.colors.primary}
                   />
                   <Text
                     variant="titleMedium"
-                    style={{ color: theme.colors.text, marginLeft: 8 }}
+                    style={{ color: theme.colors.onSurface, marginLeft: 8 }}
                   >
                     {index % 2 === 0 ? 'JIIT-62 → 128' : 'JIIT-128 → 62'}
                   </Text>

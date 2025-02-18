@@ -47,7 +47,7 @@ export default function ProfileScreen() {
               />
               <Text
                 variant="headlineMedium"
-                style={[styles.name, { color: theme.colors.text }]}
+                style={[styles.name, { color: theme.colors.onSurface }]}
               >
                 John Doe
               </Text>
@@ -83,7 +83,7 @@ export default function ProfileScreen() {
                   />
                   <Text
                     variant="titleMedium"
-                    style={{ color: theme.colors.text, marginLeft: 8 }}
+                    style={{ color: theme.colors.onSurface, marginLeft: 8 }}
                   >
                     {index === 0 ? 'Upcoming Ride' : 'Completed Ride'}
                   </Text>

@@ -111,7 +111,7 @@ export default function CreateRideScreen() {
                     ]}
                   >
                     <MaterialCommunityIcons
-                      name={opt.value === 'auto' ? 'auto-rickshaw' : 'car'}
+                      name={opt.value === 'auto' ? 'rickshaw' : 'car'}
                       size={24}
                       color={
                         transport === opt.value
@@ -126,7 +126,7 @@ export default function CreateRideScreen() {
                           color:
                             transport === opt.value
                               ? theme.colors.primary
-                              : theme.colors.text,
+                              : theme.colors.onSurface,
                         },
                       ]}
                     >
@@ -155,7 +155,7 @@ export default function CreateRideScreen() {
                 />
                 <Text
                   variant="headlineSmall"
-                  style={{ color: theme.colors.text }}
+                  style={{ color: theme.colors.onSurface }}
                 >
                   {time.toLocaleTimeString([], {
                     hour: '2-digit',
@@ -173,6 +173,7 @@ export default function CreateRideScreen() {
                     disabled={vacancy <= 1}
                     icon="minus"
                     style={styles.vacancyButton}
+                    children={undefined}
                   />
                   <Text variant="headlineMedium" style={styles.vacancyNumber}>
                     {vacancy}
@@ -185,6 +186,7 @@ export default function CreateRideScreen() {
                     disabled={vacancy >= maxVacancy}
                     icon="plus"
                     style={styles.vacancyButton}
+                    children={undefined}
                   />
                 </View>
               </View>
@@ -228,6 +230,9 @@ export default function CreateRideScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  segmentedButton: {
+    marginTop: 8,
   },
   header: {
     padding: 24,
