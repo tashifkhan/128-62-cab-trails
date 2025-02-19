@@ -38,6 +38,9 @@ export default function FindRideScreen() {
   const [selectedTransports, setSelectedTransports] = useState(['auto']);
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<
+    '128to62' | '62to128'
+  >('128to62');
 
   useEffect(() => {
     Animated.parallel([
@@ -185,6 +188,46 @@ export default function FindRideScreen() {
           <Text variant="titleLarge" style={styles.modalTitle}>
             Quick Match Preferences
           </Text>
+
+          <View style={styles.modalSection}>
+            <Text variant="bodyLarge">Destination</Text>
+            <View style={[styles.destinationOptions, { flexDirection: 'row' }]}>
+              {[
+                { id: '128to62', label: 'JIIT-128 → 62' },
+                { id: '62to128', label: 'JIIT-62 → 128' },
+              ].map(({ id, label }) => (
+                <TouchableOpacity
+                  key={id}
+                  style={[
+                    styles.destinationOption,
+                    {
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        selectedDestination === id
+                          ? theme.colors.primary + '15'
+                          : 'transparent',
+                      borderColor:
+                        selectedDestination === id
+                          ? theme.colors.primary
+                          : theme.colors.outline,
+                    },
+                  ]}
+                  onPress={() =>
+                    setSelectedDestination(id as '128to62' | '62to128')
+                  }
+                >
+                  <Text
+                    style={{ color: theme.colors.onSurface, marginLeft: 4 }}
+                  >
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
           <View style={styles.modalSection}>
             <Text variant="bodyLarge">Preferred Time</Text>
@@ -444,5 +487,17 @@ const styles = StyleSheet.create({
     padding: 20,
     margin: 20,
     borderRadius: 16,
+  },
+  destinationOptions: {
+    marginTop: 12,
+    gap: 12,
+  },
+  destinationOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 12,
   },
 });
