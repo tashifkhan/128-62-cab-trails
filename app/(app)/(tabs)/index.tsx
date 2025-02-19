@@ -1,13 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Animated } from 'react-native';
-import { Text, Card, Button, useTheme, Surface } from 'react-native-paper';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  Text,
+  Card,
+  Button,
+  useTheme,
+  Surface,
+  Portal,
+  Modal,
+} from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomTimePicker from '../../../components/CustomTimePicker';
+
+const TRANSPORT_OPTIONS: Array<{
+  label: string;
+  value: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+}> = [
+  { label: 'Auto', value: 'auto', icon: 'rickshaw' },
+  { label: 'Cab', value: 'cab', icon: 'car' },
+  { label: 'XL Cab', value: 'xl', icon: 'car-estate' },
+];
 
 export default function FindRideScreen() {
   const theme = useTheme();
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
+  const [showQuickMatch, setShowQuickMatch] = useState(false);
+  const [passengers, setPassengers] = useState(1);
+  const [selectedTransports, setSelectedTransports] = useState(['auto']);
+  const [time, setTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -71,6 +101,7 @@ export default function FindRideScreen() {
                 style={styles.matchButton}
                 icon="lightning-bolt"
                 contentStyle={styles.matchButtonContent}
+                onPress={() => setShowQuickMatch(true)}
               >
                 Match Now
               </Button>
@@ -141,6 +172,152 @@ export default function FindRideScreen() {
           </Animated.View>
         </ScrollView>
       </Animated.View>
+
+      <Portal>
+        <Modal
+          visible={showQuickMatch}
+          onDismiss={() => setShowQuickMatch(false)}
+          contentContainerStyle={[
+            styles.modalContainer,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <Text variant="titleLarge" style={styles.modalTitle}>
+            Quick Match Preferences
+          </Text>
+
+          <View style={styles.modalSection}>
+            <Text variant="bodyLarge">Preferred Time</Text>
+            <TouchableOpacity
+              onPress={() => setShowTimePicker(true)}
+              style={[styles.timeSelector, { justifyContent: 'center' }]}
+            >
+              <MaterialCommunityIcons
+                name="clock-outline"
+                size={24}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="headlineSmall"
+                style={{
+                  color: theme.colors.onSurface,
+                }}
+              >
+                {time.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.modalSection}>
+            <Text variant="bodyLarge">Number of Passengers</Text>
+            <View style={styles.passengerControls}>
+              <Button
+                mode="outlined"
+                onPress={() => setPassengers(Math.max(1, passengers - 1))}
+                disabled={passengers <= 1}
+                icon="minus"
+                style={styles.controlButton}
+                children={undefined}
+              />
+              <Text variant="headlineMedium" style={styles.passengerCount}>
+                {passengers}
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => setPassengers(Math.min(4, passengers + 1))}
+                disabled={passengers >= 4}
+                icon="plus"
+                style={styles.controlButton}
+                children={undefined}
+              />
+            </View>
+          </View>
+
+          <View style={styles.modalSection}>
+            <Text variant="bodyLarge">Preferred Transport</Text>
+            <View style={styles.transportOptions}>
+              {TRANSPORT_OPTIONS.map((opt) => (
+                <TouchableOpacity
+                  key={opt.value}
+                  onPress={() => {
+                    setSelectedTransports((prev) =>
+                      prev.includes(opt.value)
+                        ? prev.filter((t) => t !== opt.value)
+                        : [...prev, opt.value]
+                    );
+                  }}
+                  style={[
+                    styles.transportOption,
+                    {
+                      backgroundColor: selectedTransports.includes(opt.value)
+                        ? theme.colors.primary + '15'
+                        : 'transparent',
+                      borderColor: selectedTransports.includes(opt.value)
+                        ? theme.colors.primary
+                        : theme.colors.outline,
+                    },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={opt.icon}
+                    size={24}
+                    color={
+                      selectedTransports.includes(opt.value)
+                        ? theme.colors.primary
+                        : theme.colors.outline
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.transportText,
+                      {
+                        color: selectedTransports.includes(opt.value)
+                          ? theme.colors.primary
+                          : theme.colors.onSurface,
+                      },
+                    ]}
+                  >
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={() => {
+              // TODO: Implement matching logic
+              setShowQuickMatch(false);
+            }}
+            style={styles.findButton}
+          >
+            Find Matches
+          </Button>
+        </Modal>
+
+        {showTimePicker && (
+          <Portal>
+            <Modal
+              visible={showTimePicker}
+              onDismiss={() => setShowTimePicker(false)}
+              contentContainerStyle={[
+                styles.timePickerModal,
+                { backgroundColor: theme.colors.surface },
+              ]}
+            >
+              <CustomTimePicker
+                value={time}
+                onChange={(newTime) => setTime(newTime)}
+                onClose={() => setShowTimePicker(false)}
+              />
+            </Modal>
+          </Portal>
+        )}
+      </Portal>
     </SafeAreaView>
   );
 }
@@ -204,5 +381,68 @@ const styles = StyleSheet.create({
   },
   joinButtonContent: {
     paddingVertical: 8,
+  },
+  modalContainer: {
+    margin: 20,
+    padding: 20,
+    borderRadius: 16,
+  },
+  modalTitle: {
+    marginBottom: 20,
+    fontWeight: '600',
+  },
+  modalSection: {
+    marginBottom: 24,
+  },
+  passengerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    gap: 16,
+  },
+  controlButton: {
+    borderRadius: 8,
+  },
+  passengerCount: {
+    minWidth: 40,
+    textAlign: 'center',
+  },
+  transportOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
+  },
+  transportOption: {
+    flex: 1,
+    minWidth: 100,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  transportText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  findButton: {
+    marginTop: 8,
+    borderRadius: 12,
+  },
+  timeSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    marginTop: 8,
+  },
+  timePickerModal: {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 20,
+    borderRadius: 16,
   },
 });

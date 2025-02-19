@@ -33,7 +33,7 @@ const MINUTE_STEP = 15;
 
 export default function CreateRideScreen() {
   const [route, setRoute] = useState('62to128');
-  const [transport, setTransport] = useState('auto');
+  const [transport, setTransport] = useState('cab');
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [vacancy, setVacancy] = useState(1);
@@ -55,13 +55,11 @@ export default function CreateRideScreen() {
     const hours = selectedTime.getHours();
     const minutes = selectedTime.getMinutes();
 
-    // Round minutes to nearest 15
     const roundedMinutes = Math.round(minutes / MINUTE_STEP) * MINUTE_STEP;
 
     let newTime = new Date(selectedTime);
     newTime.setMinutes(roundedMinutes);
 
-    // Validate time constraints
     if (hours < START_HOUR) {
       newTime.setHours(START_HOUR, 0);
     } else if (hours > END_HOUR || (hours === END_HOUR && minutes > 30)) {
@@ -174,7 +172,7 @@ export default function CreateRideScreen() {
                       {
                         backgroundColor:
                           transport === opt.value
-                            ? theme.colors.primary + '15' // 15 is hex for 10% opacity
+                            ? theme.colors.primary + '15'
                             : 'transparent',
                         borderColor:
                           transport === opt.value
@@ -188,7 +186,13 @@ export default function CreateRideScreen() {
                   >
                     <View>
                       <MaterialCommunityIcons
-                        name={opt.value === 'auto' ? 'rickshaw' : 'car'}
+                        name={
+                          opt.value === 'auto'
+                            ? 'rickshaw'
+                            : opt.value === 'xl'
+                            ? 'car-estate'
+                            : 'car'
+                        }
                         size={20}
                         color={
                           transport === opt.value
