@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Platform } from 'react-native';
 import {
   View,
   StyleSheet,
@@ -17,14 +18,18 @@ import {
   Modal,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CustomTimePicker from '../../../components/CustomTimePicker';
 
 const TRANSPORT_OPTIONS = [
   { label: 'Auto', value: 'auto', capacity: 3 },
   { label: 'Cab', value: 'cab', capacity: 4 },
   { label: 'XL Cab', value: 'xl', capacity: 6 },
 ];
+
+const START_HOUR = 7; // 7 AM
+const END_HOUR = 18; // 6 PM
+const MINUTE_STEP = 15;
 
 export default function CreateRideScreen() {
   const [route, setRoute] = useState('62to128');
@@ -45,6 +50,26 @@ export default function CreateRideScreen() {
 
   const currentTransport = TRANSPORT_OPTIONS.find((t) => t.value === transport);
   const maxVacancy = currentTransport ? currentTransport.capacity - 1 : 0;
+
+  const validateTime = (selectedTime: Date) => {
+    const hours = selectedTime.getHours();
+    const minutes = selectedTime.getMinutes();
+
+    // Round minutes to nearest 15
+    const roundedMinutes = Math.round(minutes / MINUTE_STEP) * MINUTE_STEP;
+
+    let newTime = new Date(selectedTime);
+    newTime.setMinutes(roundedMinutes);
+
+    // Validate time constraints
+    if (hours < START_HOUR) {
+      newTime.setHours(START_HOUR, 0);
+    } else if (hours > END_HOUR || (hours === END_HOUR && minutes > 30)) {
+      newTime.setHours(END_HOUR, 30);
+    }
+
+    return newTime;
+  };
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
     setShowTimePicker(false);
@@ -236,25 +261,14 @@ export default function CreateRideScreen() {
                 { backgroundColor: theme.colors.surface },
               ]}
             >
-              <DateTimePicker
+              <CustomTimePicker
                 value={time}
-                mode="time"
-                is24Hour={true}
-                onChange={(event, selectedTime) => {
-                  if (selectedTime) {
-                    setTime(selectedTime);
-                  }
+                onChange={(newTime) => {
+                  const validTime = validateTime(newTime);
+                  setTime(validTime);
                 }}
-                display="spinner"
+                onClose={() => setShowTimePicker(false)}
               />
-              <Button
-                mode="contained"
-                onPress={() => setShowTimePicker(false)}
-                style={styles.createButton}
-                contentStyle={styles.createButtonContent}
-              >
-                Confirm Time
-              </Button>
             </Modal>
           </Portal>
         )}
