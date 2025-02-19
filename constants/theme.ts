@@ -18,7 +18,7 @@ const lightColors = {
 
 const darkColors = {
   ...MD3DarkTheme.colors,
-  primary: '#5B8DFF',
+  primary: '#8AB8E8',
   secondary: '#818cf8',
   error: '#ef4444',
   success: '#22c55e',
