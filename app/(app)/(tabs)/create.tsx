@@ -27,8 +27,8 @@ const TRANSPORT_OPTIONS = [
   { label: 'XL Cab', value: 'xl', capacity: 6 },
 ];
 
-const START_HOUR = 7; // 7 AM
-const END_HOUR = 18; // 6 PM
+const START_HOUR = 7;
+const END_HOUR = 18;
 const MINUTE_STEP = 15;
 
 export default function CreateRideScreen() {

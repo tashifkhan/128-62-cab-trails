@@ -3,7 +3,7 @@ import { useColorScheme } from 'react-native';
 
 const lightColors = {
   ...MD3LightTheme.colors,
-  primary: '#2563eb',
+  primary: '#002884',
   secondary: '#4f46e5',
   error: '#ef4444',
   success: '#22c55e',
@@ -18,7 +18,7 @@ const lightColors = {
 
 const darkColors = {
   ...MD3DarkTheme.colors,
-  primary: '#60a5fa',
+  primary: '#5B8DFF',
   secondary: '#818cf8',
   error: '#ef4444',
   success: '#22c55e',
