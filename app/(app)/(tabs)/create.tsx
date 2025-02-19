@@ -101,23 +101,63 @@ export default function CreateRideScreen() {
               <Text variant="titleMedium" style={styles.sectionTitle}>
                 Route Details
               </Text>
-              <SegmentedButtons
-                value={route}
-                onValueChange={setRoute}
-                buttons={[
+              <View style={styles.routeContainer}>
+                {[
                   {
                     value: '62to128',
-                    label: 'JIIT-62 → 128',
-                    icon: 'arrow-right',
+                    label: '62 to 128',
+                    icon: 'arrow-right-bold' as const,
                   },
                   {
                     value: '128to62',
-                    label: 'JIIT-128 → 62',
-                    icon: 'arrow-left',
+                    label: '128 to 62',
+                    icon: 'arrow-left-bold' as const,
                   },
-                ]}
-                style={styles.segmentedButton}
-              />
+                ].map((item) => (
+                  <TouchableOpacity
+                    key={item.value}
+                    onPress={() => setRoute(item.value)}
+                    style={[
+                      styles.routeOption,
+                      {
+                        backgroundColor:
+                          route === item.value
+                            ? theme.colors.primary + '15'
+                            : 'transparent',
+                        borderColor:
+                          route === item.value
+                            ? theme.colors.primary
+                            : theme.colors.outline,
+                        transform: [{ scale: route === item.value ? 1.02 : 1 }],
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={item.icon}
+                      size={24}
+                      color={
+                        route === item.value
+                          ? theme.colors.primary
+                          : theme.colors.outline
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.routeText,
+                        {
+                          color:
+                            route === item.value
+                              ? theme.colors.primary
+                              : theme.colors.onSurface,
+                          fontWeight: route === item.value ? '600' : '400',
+                        },
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             <View style={styles.section}>
@@ -280,6 +320,23 @@ export default function CreateRideScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  routeText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  routeContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  routeOption: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
   segmentedButton: {
     marginTop: 8,
