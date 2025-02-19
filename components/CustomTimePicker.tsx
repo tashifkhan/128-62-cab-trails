@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Platform, StyleSheet } from 'react-native';
 import { Button, Text, useTheme } from 'react-native-paper';
 import ScrollPicker from './ScrollPicker';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const START_HOUR = 7;
 const END_HOUR = 18;
